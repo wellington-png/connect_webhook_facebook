@@ -5,7 +5,7 @@ from facebook_business.exceptions import FacebookRequestError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from decouple import config
-from .models import Lead
+# from .models import Lead
 
 class FacebookLeadAds:
     access_token = settings.FACEBOOK_PAGE_ACCESS_TOKEN
@@ -54,5 +54,5 @@ class FacebookWebhook(APIView):
                 if not lead_email:
                     return Response({"success": False})
 
-    
+        print('success')
         return Response({"success": True})
