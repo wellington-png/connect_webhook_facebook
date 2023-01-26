@@ -4,7 +4,7 @@ from facebook_business.adobjects.lead import Lead
 from facebook_business.exceptions import FacebookRequestError
 from rest_framework.views import APIView
 from rest_framework.response import Response
-
+from decouple import config
 from .models import Lead
 
 class FacebookLeadAds:
