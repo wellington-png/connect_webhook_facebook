@@ -44,7 +44,7 @@ class FacebookWebhook(APIView):
 
     def post(self, request):
         entry = request.data.get("entry", None)
-
+        print('Post request received')
         for data in entry:
             changes = data["changes"]
             for change in changes:
