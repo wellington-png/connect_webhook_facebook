@@ -19,8 +19,10 @@ class FacebookLeadAds:
 
     def get_lead_email(self, lead_id):
         try:
+            print("lead_id")
             lead = Lead(lead_id).api_get()
         except FacebookRequestError as e:
+            print('false error')
             return False
 
         lead_data = lead.get("field_data", None)
@@ -29,12 +31,10 @@ class FacebookLeadAds:
             if data.get("name", None) in ["e-mail", "email"]:
                 email = data.get("values")[0]
                 return email.strip().lower()
-
+        print('False')
         return False
 class FacebookWebhook(APIView):
     def get(self, request):
-        """Necessary for webhook url validation from Facebook"""
-
         verify_token = request.GET.get("hub.verify_token", "")
 
         if verify_token != "MyVerificationToken":
@@ -49,6 +49,7 @@ class FacebookWebhook(APIView):
             changes = data["changes"]
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
+                print(leadgen_id)
 
                 lead_email = FacebookLeadAds().get_lead_email(leadgen_id)
                 if not lead_email:
