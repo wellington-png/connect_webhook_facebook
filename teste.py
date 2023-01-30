@@ -18,11 +18,11 @@ class FacebookLeadAds:
     def get_lead(self, lead_id):
         try:
             lead = Lead(lead_id).api_get()
+            print(lead, '++++++++++++++++')
         except FacebookRequestError as e:
             return False
 
         lead_data = lead.get("field_data", None)
-
         for data in lead_data:
             if data.get("name", None) in ["e-mail", "email", "E-mail", 'EMAIL']:
                 email = data.get("values")[0]

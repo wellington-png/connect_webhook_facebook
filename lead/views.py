@@ -22,10 +22,10 @@ class FacebookLeadAds:
         try:
             lead = Lead(lead_id).api_get()
         except FacebookRequestError as e:
+            print('error try')
             return False
 
         lead_data = lead.get("field_data", None)
-
         for data in lead_data:
             if data.get("name", None) in ["e-mail", "email", "E-mail", 'EMAIL']:
                 email = data.get("values")[0]
@@ -37,6 +37,7 @@ class FacebookLeadAds:
         
         if result:
             return result
+        print('error result')
         return False
 
 class FacebookWebhook(APIView):
@@ -53,13 +54,12 @@ class FacebookWebhook(APIView):
             changes = data["changes"]
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
-                print(leadgen_id)
-
                 lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
                 print(lead_email)
                 if not lead_email:
+                    print('Erro: wdwd')
                     return Response({"success": False})
-        return Response({"success": True})
+        return Response({"success": lead_email})
 
 
 def get_lead(request):
