@@ -19,14 +19,13 @@ class FacebookLeadAds:
         )
 
     def get_lead(self, lead_id):
-        print(lead_id, '++++++++++++++++')
         try:
             lead = Lead(lead_id).api_get()
+            print(lead)
         except FacebookRequestError as e:
             return False
 
         lead_data = lead.get("field_data", None)
-        print(lead_data, '++++++++++++++++')
         for data in lead_data:
             if data.get("name", None) in ["e-mail", "email", "E-mail", 'EMAIL']:
                 email = data.get("values")[0]
@@ -35,7 +34,6 @@ class FacebookLeadAds:
             if data.get("name", None) in ["Telefone", 'PHONE']:
                 tell = data.get("values")[0]
         result =  {'email': email.strip().lower(), 'name': name.strip().lower(), 'phone': tell.strip().lower()}
-        print(result, '++++++++++++++++')
         if result:
             return result
         return False
@@ -55,10 +53,9 @@ class FacebookWebhook(APIView):
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
                 lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
-                print('++++++++++++++++')
                 if not lead_email:
                     return Response({"success": False})
-
+            print(lead_email)
             LeadModel.objects.create(**lead_email)
         return Response({"success": lead_email})
 
