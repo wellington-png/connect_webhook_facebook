@@ -5,7 +5,7 @@ from facebook_business.exceptions import FacebookRequestError
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from decouple import config
-# from .models import Lead
+from .models import Lead as LeadModel
 from django.http import HttpResponse
 
 class FacebookLeadAds:
@@ -19,13 +19,14 @@ class FacebookLeadAds:
         )
 
     def get_lead(self, lead_id):
+        print(lead_id, '++++++++++++++++')
         try:
             lead = Lead(lead_id).api_get()
         except FacebookRequestError as e:
-            print('error try')
             return False
 
         lead_data = lead.get("field_data", None)
+        print(lead_data, '++++++++++++++++')
         for data in lead_data:
             if data.get("name", None) in ["e-mail", "email", "E-mail", 'EMAIL']:
                 email = data.get("values")[0]
@@ -34,10 +35,9 @@ class FacebookLeadAds:
             if data.get("name", None) in ["Telefone", 'PHONE']:
                 tell = data.get("values")[0]
         result =  {'email': email.strip().lower(), 'name': name.strip().lower(), 'phone': tell.strip().lower()}
-        
+        print(result, '++++++++++++++++')
         if result:
             return result
-        print('error result')
         return False
 
 class FacebookWebhook(APIView):
@@ -49,19 +49,20 @@ class FacebookWebhook(APIView):
         return Response(int(request.GET.get("hub.challenge", 0)))
 
     def post(self, request):
-        print(request.data)
         entry = request.data.get("entry", None)
         for data in entry:
             changes = data["changes"]
             for change in changes:
                 leadgen_id = change["value"]["leadgen_id"]
                 lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
-                print(lead_email)
+                print('++++++++++++++++')
                 if not lead_email:
-                    print('Erro: wdwd')
                     return Response({"success": False})
+
+            LeadModel.objects.create(**lead_email)
         return Response({"success": lead_email})
 
 
 def get_lead(request):
-    return HttpResponse('HEllo word', status=200)
+    list_lead = LeadModel.objects.all()
+    return HttpResponse(list_lead)
