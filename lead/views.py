@@ -21,7 +21,6 @@ class FacebookLeadAds:
     def get_lead(self, lead_id):
         try:
             lead = Lead(lead_id).api_get()
-            print(lead)
         except FacebookRequestError as e:
             return False
 
@@ -55,7 +54,6 @@ class FacebookWebhook(APIView):
                 lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
                 if not lead_email:
                     return Response({"success": False})
-            print(lead_email)
             LeadModel.objects.create(**lead_email)
         print(lead_email)
         return Response({"success": lead_email})
