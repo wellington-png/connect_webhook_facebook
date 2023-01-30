@@ -1,12 +1,8 @@
-from django.conf import settings
 from facebook_business.api import FacebookAdsApi
 from facebook_business.adobjects.lead import Lead
 from facebook_business.exceptions import FacebookRequestError
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from decouple import config
-# from .models import Lead
-from django.http import HttpResponse
+import requests
 
 class FacebookLeadAds:
     access_token = config('FACEBOOK_PAGE_ACCESS_TOKEN')
@@ -36,27 +32,9 @@ class FacebookLeadAds:
                 return {'email': email.strip().lower(), 'name': name.strip().lower(), 'tell': tell.strip().lower()}
         return False
 
-class FacebookWebhook(APIView):
-    def get(self, request):
-        """Necessary for webhook url validation from Facebook"""
-        verify_token = request.GET.get("hub.verify_token", "")
-        if verify_token != "MyVerificationToken":
-            return Response("Wrong verification token", status=403)
-        return Response(int(request.GET.get("hub.challenge", 0)))
 
-    def post(self, request):
-        entry = request.data.get("entry", None)
-        for data in entry:
-            changes = data["changes"]
-            for change in changes:
-                leadgen_id = change["value"]["leadgen_id"]
-                print(leadgen_id)
-
-                lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
-                if not lead_email:
-                    return Response({"success": False})
-        return Response({"success": True})
-
-
-def get_lead(request):
-    return HttpResponse('HEllo word', status=200)
+    
+   
+if __name__ == '__main__':
+    lead = FacebookLeadAds()
+    print(lead.get_lead_email(lead_id='532486685526415'))
