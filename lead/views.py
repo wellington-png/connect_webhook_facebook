@@ -29,11 +29,13 @@ class FacebookLeadAds:
         for data in lead_data:
             if data.get("name", None) in ["e-mail", "email", "E-mail"]:
                 email = data.get("values")[0]
-            if data.get("name", None) in ["Nome completo", "Nome_completo"]:
+            if data.get("name", None) in ["Nome completo", "Nome_completo", 'nome_completo', 'nome completo']:
                 name = data.get("values")[0]
-            if data.get("name", None) in ["Telefone"]:
+            if data.get("name", None) in ["Telefone", 'telefone', 'phone', 'numero', 'phone_number']:
                 tell = data.get("values")[0]
-                return {'email': email.strip().lower(), 'name': name.strip().lower(), 'tell': tell.strip().lower()}
+                return {'email': email.strip().lower(), 'name': name.strip().lower(), 'phone': tell.strip().lower()}
+        return False
+
         return False
 
 class FacebookWebhook(APIView):
@@ -53,6 +55,7 @@ class FacebookWebhook(APIView):
                 print(leadgen_id)
 
                 lead_email = FacebookLeadAds().get_lead(str(leadgen_id))
+                print(lead_email)
                 if not lead_email:
                     return Response({"success": False})
         return Response({"success": True})
