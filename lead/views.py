@@ -49,6 +49,7 @@ class FacebookWebhook(APIView):
         return Response(int(request.GET.get("hub.challenge", 0)))
 
     def post(self, request):
+        print(request.data)
         entry = request.data.get("entry", None)
         for data in entry:
             changes = data["changes"]
