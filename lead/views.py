@@ -57,6 +57,7 @@ class FacebookWebhook(APIView):
                     return Response({"success": False})
             print(lead_email)
             LeadModel.objects.create(**lead_email)
+        print(lead_email)
         return Response({"success": lead_email})
 
 
